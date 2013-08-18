@@ -10,7 +10,7 @@ var fs    = require('fs'),
 module.exports.AffixParser = AffixParser = function(options) {
   this.options = options;
   this.affixes = {};
-  this.encoding = 'ISO8859-1';
+  this.encoding = options.encoding || 'ISO8859-1';
 };
 
 AffixParser.prototype.parse = function(cb) {
@@ -33,7 +33,7 @@ function readAffixFile(cb) {
   .pipe(Iconv(self.encoding, 'UTF-8'))
   .pipe(split())
   .pipe(through(function(line) {
-    if (!line.match(/^\s*$|^#/)) this.emit(line);
+    if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
     if (_suff = line.match(/^([SP])FX\s+(\w)\s+(\w)\s+(\d+)/)) {
