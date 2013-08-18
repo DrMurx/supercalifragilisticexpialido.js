@@ -14,5 +14,11 @@
     "type": "git",
     "url": "https://github.com/DrMurx/supercalifragilisticexpialido.js"
   },
-  "license": "AGPLv3"
+  "license": "AGPLv3",
+  "dependencies": {
+    "iconv": "~2.0.6",
+    "optimist": "~0.6.0",
+    "split": "~0.2.10",
+    "through": "~2.3.4"
+  }
 }
