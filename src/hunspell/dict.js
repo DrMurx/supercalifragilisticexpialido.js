@@ -53,31 +53,27 @@ function expandWord(word, affixIds) {
   self.words.push(word);
 
   prefixes.forEach(function (affix)) {
-    var re = new Regexp("^" + affix.condition);
-    if (!word.match(re)) return;
+    if (!word.match(affix.condition)) return;
     self.words.push(affix.append + word.substr(affix.strip));
   }
 
   suffixes.forEach(function (affix)) {
-    var re = new Regexp(affix.condition + "$");
-    if (!word.match(re)) return;
+    if (!word.match(affix.condition)) return;
     self.words.push(word.substr(0, word.length - affix.strip) + affix.append);
   }
 
-/*
   crossPrefixes.forEach(function (affix)) {
     var re = new Regexp("^" + affix.condition);
     if (!word.match(re)) return;
     var prefix = affix;
     crossSuffixes.forEach(function (affix)) {
-      var re = new Regexp(affix.condition + "$");
-      if (!word.match(re)) return;
+      if (!word.match(affix.condition)) return;
       self.words.push(word.substr(0, word.length - affix.strip) + append);
     self.words.push(append + word.substr(affix.strip));
     }
 
   }
-*/
+
 
 
 }

@@ -1,5 +1,6 @@
-var fs    = require('fs'),
-  Iconv   = require('iconv').Iconv;
+var
+  fs      = require('fs'),
+  Iconv   = require('iconv').Iconv,
   split   = require('split'),
   through = require('through');
 
@@ -49,12 +50,13 @@ function readAffixFile(cb) {
     if (_suff = line.match(/^([SP])FX\s+(\w)\s+(\w+|0)\s+(\w+)\s+([\]\[\w\.^]+)/)) {
       var id = _suff[2];
       if (typeof self.affixes[id] == 'undefined') return cb("Unexpected affix id " + _suff[2]);
-      if (self.affixes[id].type != _suff[1]) return cb("Unexpected affix type " + _suff[1]);
+      var affix = self.affixes[id];
+      if (affix.type != _suff[1]) return cb("Unexpected affix type " + _suff[1]);
 
-      self.affixes[id].entries.push({
-        strip: _suff[3] == '0' ? null : _suff[3],
+      affix.entries.push({
+        strip: _suff[3] == '0' ? 0 : _suff[3].length,
         append: _suff[4],
-        condition: _suff[5]
+        condition: new RegExp(affix.type == 'P' ? '^' + _suff[5] : _suff[5] + '$')
       });
     }
   })).on('end', function() {
@@ -71,7 +73,7 @@ function ensureEncoding(cb) {
   })
   .pipe(split())
   .pipe(through(function(line) {
-    if (!line.match(/^\s*$|^#/)) this.emit(line);
+    if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
     if (_encoding = line.match(/^SET\s+([.\w\d\-]+)/)) {
