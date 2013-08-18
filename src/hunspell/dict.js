@@ -45,10 +45,12 @@ function expandWord(word, affixIds) {
   affixIds.forEach(function (affixId) {
     var affix;
     if (affix = self.options.affixes[affixId]) {
-      (affix.type == 'P' ? prefixes : suffixes).push(affix.entries);
-      if (affix.cross) {
-        (affix.type == 'P' ? crossPrefixes : crossSuffixes).push(affix.entries);
-      }
+      affix.entries.forEach(function(entry) {
+        (affix.type == 'P' ? prefixes : suffixes).push(entry);
+        if (affix.cross) {
+          (affix.type == 'P' ? crossPrefixes : crossSuffixes).push(entry);
+        }
+      });
     }
   });
 

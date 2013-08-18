@@ -18,7 +18,6 @@ affixParser = new AffixParser({path: argv.lang + '.aff'});
 
 affixParser.parse(function(err){
   if (err) return console.error(err);
-  // console.log(affixParser.affixes);
 
   var dictParser = new DictParser({
     path: argv.lang + '.dic',
