@@ -26,7 +26,8 @@ DictParser.prototype.parse = function(cb) {
   .pipe(through(function(line) {
     if (lineCount++ === 0) return;
     var els = line.split('/');
-    expandWord.call(self, els[0], (els[1] || '').split(''));
+    els[1] = els[1] || '';
+    expandWord.call(self, els[0], els[1].split(els[1].indexOf(',') >= 0 ? ',' : ''));
   }))
   .on('end', cb);
 }
