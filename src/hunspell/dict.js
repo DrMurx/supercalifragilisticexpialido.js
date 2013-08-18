@@ -9,6 +9,7 @@ var
  */
 module.exports.DictParser = DictParser = function(options) {
   this.options = options;
+  this.encoding = options.encoding;
   this.words = [];
 }
 
@@ -24,13 +25,14 @@ DictParser.prototype.parse = function(cb) {
   .pipe(Iconv(self.encoding, 'UTF-8'))
   .pipe(split())
   .pipe(through(function(line) {
-    if (!line.match(/^\s*$|^#/)) this.emit(line);
+    if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
-    if (lineCount === 0) return;
+    if (lineCount++ === 0) return;
     var els = line.split('/');
     expandWord.call(self, els[0], (els[1] || '').split(''));
-  });
+  }))
+  .on('end', cb);
 }
 
 
@@ -52,28 +54,22 @@ function expandWord(word, affixIds) {
 
   self.words.push(word);
 
-  prefixes.forEach(function (affix)) {
+  prefixes.forEach(function (affix) {
     if (!word.match(affix.condition)) return;
     self.words.push(affix.append + word.substr(affix.strip));
-  }
+  });
 
-  suffixes.forEach(function (affix)) {
+  suffixes.forEach(function (affix) {
     if (!word.match(affix.condition)) return;
     self.words.push(word.substr(0, word.length - affix.strip) + affix.append);
-  }
+  });
 
-  crossPrefixes.forEach(function (affix)) {
-    var re = new Regexp("^" + affix.condition);
-    if (!word.match(re)) return;
-    var prefix = affix;
-    crossSuffixes.forEach(function (affix)) {
+  crossPrefixes.forEach(function (affix) {
+    if (!word.match(affix.condition)) return;
+    var prefixedWord = affix.append + word.substr(affix.strip);
+    crossSuffixes.forEach(function (affix) {
       if (!word.match(affix.condition)) return;
-      self.words.push(word.substr(0, word.length - affix.strip) + append);
-    self.words.push(append + word.substr(affix.strip));
-    }
-
-  }
-
-
-
+      self.words.push(prefixedWord.substr(0, prefixedWord.length - affix.strip) + affix.append);
+    });
+  });
 }
