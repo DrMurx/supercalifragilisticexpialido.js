@@ -28,9 +28,7 @@ AffixParser.prototype.parse = function(cb) {
 function readAffixFile(cb) {
   var self = this;
 
-  fs.createReadStream(self.options.path, {
-    encoding: 'binary'
-  })
+  fs.createReadStream(self.options.path)
   .pipe(Iconv(self.encoding, 'UTF-8'))
   .pipe(split())
   .pipe(through(function(line) {
@@ -64,13 +62,11 @@ function readAffixFile(cb) {
     if (self.encoding === null) error = "No encoding specified.";
     cb(error);
   });
-}
+};
 
 function ensureEncoding(cb) {
   var self = this;
-  fs.createReadStream(this.options.path, {
-    encoding: 'ascii'
-  })
+  fs.createReadStream(this.options.path)
   .pipe(split())
   .pipe(through(function(line) {
     if (!line.match(/^\s*$|^#/)) this.emit('data', line);

@@ -11,17 +11,13 @@ module.exports.DictParser = DictParser = function(options) {
   this.options = options;
   this.encoding = options.encoding;
   this.words = [];
-}
-
-
+};
 
 DictParser.prototype.parse = function(cb) {
   var self = this,
       lineCount = 0;
 
-  fs.createReadStream(self.options.path, {
-    encoding: 'binary'
-  })
+  fs.createReadStream(self.options.path)
   .pipe(Iconv(self.encoding, 'UTF-8'))
   .pipe(split())
   .pipe(through(function(line) {
