@@ -10,6 +10,7 @@ var optimist = require('optimist')
   argv = optimist.argv,
   AffixParser = require('./src/hunspell/affix').AffixParser,
   DictParser = require('./src/hunspell/dict').DictParser,
+  util = require('util'),
   FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer;
 
 if (argv.help) {
@@ -31,7 +32,9 @@ affixParser.parse(function(err){
   dictParser.parse(function() {
 
     var anal = new FreqAnal();
-    console.log(anal.analyze(dictParser.words, 3));
+    console.log(
+      util.inspect(
+        anal.analyze(dictParser.words, 3), { showHidden: true, depth: null }));
 
   });
 });
