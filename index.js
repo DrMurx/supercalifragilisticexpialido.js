@@ -1,14 +1,16 @@
 var optimist = require('optimist')
- .usage('Usage: $0 --lang [en_US]')
- .demand(['l'])
- .alias('l', 'lang')
- .describe('l', 'Language to load')
- .default('l', 'en_US')
- .describe('help', 'Show this help'),
- argv = optimist.argv,
- AffixParser = require('./src/hunspell/affix').AffixParser,
- DictParser = require('./src/hunspell/dict').DictParser,
- FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer;
+    .usage('Usage: $0 --lang [en_US]')
+    .demand(['l'])
+    .alias('l', 'lang')
+    .describe('l', 'Language to load')
+    .default('l', 'en_US')
+    .describe('help', 'Show this help')
+    .alias('c', 'config')
+    .describe('c', 'Config YML file'),
+  argv = optimist.argv,
+  AffixParser = require('./src/hunspell/affix').AffixParser,
+  DictParser = require('./src/hunspell/dict').DictParser,
+  FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer;
 
 if (argv.help) {
   optimist.showHelp();

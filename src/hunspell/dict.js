@@ -30,7 +30,7 @@ DictParser.prototype.parse = function(cb) {
     expandWord.call(self, els[0], els[1].split(els[1].indexOf(',') >= 0 ? ',' : ''));
   }))
   .on('end', cb);
-}
+};
 
 
 function expandWord(word, affixIds) {
@@ -40,8 +40,8 @@ function expandWord(word, affixIds) {
       crossPrefixes = [],
       crossSuffixes = [];
   affixIds.forEach(function (affixId) {
-    var affix;
-    if (affix = self.options.affixes[affixId]) {
+    var affix = self.options.affixes[affixId];
+    if (affix) {
       affix.entries.forEach(function(entry) {
         (affix.type == 'P' ? prefixes : suffixes).push(entry);
         if (affix.cross) {
