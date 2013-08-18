@@ -37,7 +37,7 @@ function readAffixFile(cb) {
     if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
-    if (_suff = line.match(/^([SP])FX\s+(\w)\s+(\w)\s+(\d+)/)) {
+    if (_suff = line.match(/^([SP])FX\s+([\w\d]+)\s+(\w)\s+(\d+)/)) {
       var id = _suff[2];
       self.affixes[id] = {
         type:    _suff[1],
@@ -47,7 +47,7 @@ function readAffixFile(cb) {
       affixCnt = _suff[4];
       return;
     }
-    if (_suff = line.match(/^([SP])FX\s+(\w)\s+(\w+|0)\s+(\w+)\s+([\]\[\w\.^]+)/)) {
+    if (_suff = line.match(/^([SP])FX\s+([\w\d]+)\s+(\pL+|0)\s+(\pL+)\s+([\]\[\pL\.^]+)/)) {
       var id = _suff[2];
       if (typeof self.affixes[id] == 'undefined') return cb("Unexpected affix id " + _suff[2]);
       var affix = self.affixes[id];
