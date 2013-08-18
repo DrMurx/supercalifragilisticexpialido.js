@@ -30,11 +30,12 @@ affixParser.parse(function(err){
   });
 
   dictParser.parse(function() {
-
+    if (argv.printwords) dictParser.words.forEach(function (word) {
+      process.stdout.write(word + '\n');
+    });
     var anal = new FreqAnal();
     console.log(
       util.inspect(
         anal.analyze(dictParser.words, 3), { showHidden: true, depth: null }));
-
   });
 });

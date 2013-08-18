@@ -2,7 +2,9 @@ var
   fs      = require('fs'),
   Iconv   = require('iconv').Iconv,
   split   = require('split'),
-  through = require('through');
+  through = require('through'),
+  _       = require('underscore'),
+  XRegExp = require('xregexp').XRegExp;
 
 /**
  * @class DictParser
@@ -26,12 +28,28 @@ DictParser.prototype.parse = function(cb) {
   .pipe(through(function(line) {
     if (lineCount++ === 0) return;
     var els = line.split('/');
+    if (self.filterWord(els[0])) return;
     els[1] = els[1] || '';
+
     expandWord.call(self, els[0], els[1].split(els[1].indexOf(',') >= 0 ? ',' : ''));
   }))
   .on('end', cb);
 };
 
+
+DictParser.prototype.illegalWords = {
+  'acronym': XRegExp("\\p{Lu}{2,}"),
+  'abbrev': XRegExp("[-.]$|^-"),
+  'freaky': XRegExp("[^\\p{L}\\p{Arabic}'-]")
+};
+
+DictParser.prototype.filterWord = function(word) {
+  return _(this.illegalWords).reduce(function(result, rule, ruleName) {
+    var matches = rule.test(word);
+    // if (matches) console.log("Word '%s' is '%s'", word, ruleName);
+    return matches ? true : result;
+  }, false);
+};
 
 function expandWord(word, affixIds) {
   var self = this,
