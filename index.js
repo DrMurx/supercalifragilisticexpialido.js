@@ -7,7 +7,8 @@ var optimist = require('optimist')
  .describe('help', 'Show this help'),
  argv = optimist.argv,
  AffixParser = require('./src/hunspell/affix').AffixParser,
- DictParser = require('./src/hunspell/dict').DictParser;
+ DictParser = require('./src/hunspell/dict').DictParser,
+ FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer;
 
 if (argv.help) {
   optimist.showHelp();
@@ -26,8 +27,9 @@ affixParser.parse(function(err){
   });
 
   dictParser.parse(function() {
-    dictParser.words.forEach(function(word) {
-      process.stdout.write(word + "\n");
-    });
+
+    var anal = new FreqAnal();
+    console.log(anal.analyze(dictParser.words, 3));
+
   });
 });
