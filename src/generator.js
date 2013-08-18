@@ -1,7 +1,8 @@
 var _ = require('underscore');
 
-module.exports.Generator = Generator = function(tupelList, options) {
+module.exports.Generator = Generator = function(tupelList, words, options) {
   this.options = options;
+  this.words = words;
   this.start = tupelList.start;
   this.mid   = tupelList.mid;
   this.end   = tupelList.end;
@@ -38,15 +39,11 @@ function collect(length, prefix, tupelLen) {
     var last = null;
     _.each(dist[first], function(weight, k) {
       rand -= weight;
-      last = k;
+      rand >= 0 && last = k;
     });
-    foreach ($dist[$first] as $last => $weight) {
-      $rand -= $weight;
-      if ($rand < 0) break;
-    }
 
     // Last letter, are we done?
-    if ($length == 1) {
+    if (length == 1) {
       // Avoid true words, return null for another recursion
       if (isset($this->words[$prefix . $last])) return null;
       return $prefix . $last;
