@@ -14,20 +14,20 @@ if (argv.help) {
   process.exit(0);
 }
 
-affixParser = new AffixParser({path: argv.lang + '.aff'});
+affixParser = new AffixParser({path: 'dicts/' + argv.lang + '.aff'});
 
 affixParser.parse(function(err){
   if (err) return console.error(err);
 
   var dictParser = new DictParser({
-    path: argv.lang + '.dic',
+    path: 'dicts/' + argv.lang + '.dic',
     encoding: affixParser.encoding,
     affixes: affixParser.affixes
   });
 
   dictParser.parse(function() {
     dictParser.words.forEach(function(word) {
-      process.stdout.write(word);
+      console.log(word);
     });
   });
 });
