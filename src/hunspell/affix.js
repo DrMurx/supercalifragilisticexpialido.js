@@ -62,18 +62,20 @@ function readAffixFile(cb) {
     if (self.encoding === null) error = "No encoding specified.";
     cb(error);
   });
-};
+}
 
 function ensureEncoding(cb) {
-  var self = this;
-  fs.createReadStream(this.options.path)
-  .pipe(split())
+  var self = this,
+  stream = fs.createReadStream(this.options.path);
+  stream.pipe(split())
   .pipe(through(function(line) {
     if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
     if (_encoding = line.match(/^SET\s+([.\w\d\-]+)/)) {
        self.encoding = _encoding[1];
+       stream.unpipe();
+       this.end();
     }
   })).on('end', function() {
     var error;

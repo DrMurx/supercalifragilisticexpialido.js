@@ -27,7 +27,7 @@ affixParser.parse(function(err){
 
   dictParser.parse(function() {
     dictParser.words.forEach(function(word) {
-      console.log(word);
+      process.stdout.write(word + "\n");
     });
   });
 });
