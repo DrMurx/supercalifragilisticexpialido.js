@@ -36,13 +36,48 @@ DictParser.prototype.parse = function(cb) {
 
 function expandWord(word, affixIds) {
   var self = this,
-      prefixes = {},
-      suffixes = {};
+      prefixes = [],
+      suffixes = [],
+      crossPrefixes = [],
+      crossSuffixes = [];
   affixIds.forEach(function (affixId) {
     var affix;
     if (affix = self.options.affixes[affixId]) {
-      (affix.type == 'P' ?  prefixes : suffixes)[affixId] = affix;
+      (affix.type == 'P' ? prefixes : suffixes).push(affix.entries);
+      if (affix.cross) {
+        (affix.type == 'P' ? crossPrefixes : crossSuffixes).push(affix.entries);
+      }
     }
   });
-  
+
+  self.words.push(word);
+
+  prefixes.forEach(function (affix)) {
+    var re = new Regexp("^" + affix.condition);
+    if (!word.match(re)) return;
+    self.words.push(affix.append + word.substr(affix.strip));
+  }
+
+  suffixes.forEach(function (affix)) {
+    var re = new Regexp(affix.condition + "$");
+    if (!word.match(re)) return;
+    self.words.push(word.substr(0, word.length - affix.strip) + affix.append);
+  }
+
+/*
+  crossPrefixes.forEach(function (affix)) {
+    var re = new Regexp("^" + affix.condition);
+    if (!word.match(re)) return;
+    var prefix = affix;
+    crossSuffixes.forEach(function (affix)) {
+      var re = new Regexp(affix.condition + "$");
+      if (!word.match(re)) return;
+      self.words.push(word.substr(0, word.length - affix.strip) + append);
+    self.words.push(append + word.substr(affix.strip));
+    }
+
+  }
+*/
+
+
 }
