@@ -19,6 +19,7 @@
     "iconv": "~2.0.6",
     "optimist": "~0.6.0",
     "split": "~0.2.10",
-    "through": "~2.3.4"
+    "through": "~2.3.4",
+    "underscore": "~1.5.1"
   }
 }
