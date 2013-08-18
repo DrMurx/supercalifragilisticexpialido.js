@@ -1,0 +1,18 @@
+{
+  "name": "supercalifragilisticexpialido.js",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jan Kunzmann <jan-github@phobia.de>",
+  "contributors": [
+    "Leonhardt Wille <hallo@leonhardt-wille.de>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DrMurx/supercalifragilisticexpialido.js"
+  },
+  "license": "AGPLv3"
+}
