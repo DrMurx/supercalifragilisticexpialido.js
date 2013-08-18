@@ -8,14 +8,14 @@ module.exports.Generator = Generator = function(tupelList, words, options) {
   this.end   = tupelList.end;
 }
 
-Generator.prototype.getWord(length) {
-  var bestTupelLength = 3;
-  return collect(length, '', bestTupelLength);
+Generator.prototype.getWord = function(length) {
+  var bestTupelLength = 6;
+  return collect.call(this, length, '', bestTupelLength);
 }
 
 
 function collect(length, prefix, tupelLen) {
-  var prefixLen = prefix.length;
+  var prefixLen = prefix.length, dist, first;
 
   // Elect proper distribution table
   if (prefixLen < tupelLen) {
@@ -31,30 +31,37 @@ function collect(length, prefix, tupelLen) {
   }
 
   while (true) {
-    // No distribution map availalbe -> drop out for another recursion
-    if (!dist[first]) return null;
+    // No distribution map available -> drop out for another recursion
+    if (_(dist[first]).size() == 0) {
+      delete dist[first];
+      return;
+    }
 
     // Get weighted random entry of the distribution map
-    var rand = Math.round(Math.random() * dist[first].reduce(function(p, n) { return p + n; }));
+    var rand = Math.round(Math.random() * _(dist[first]).reduce(function(p, n) { return p + n; }));
     var last = null;
-    _.each(dist[first], function(weight, k) {
+//console.log(rand, _(dist[first]).reduce(function(p, n) { return p + n; }));
+    _(dist[first]).find(function(weight, _last) {
+//console.log('  ', weight, _last);
       rand -= weight;
-      rand >= 0 && last = k;
+      last = _last;
+      return (rand < 0);
     });
 
     // Last letter, are we done?
     if (length == 1) {
       // Avoid true words, return null for another recursion
-      if (isset($this->words[$prefix . $last])) return null;
-      return $prefix . $last;
+      if (this.words.indexOf(prefix + last) >= 0) return;
+      return prefix + last;
     }
 
     // Recurse to next letter
-    $s = $this->collect($length - 1, $prefix . $last, $tupelLen);
-    if ($s !== null) return $s;
+// console.log('1', prefix, first, last, dist[first]);
+    s = collect.call(this, length - 1, prefix + last, tupelLen);
+    if (typeof s == 'string') return s;
+// console.log('2', prefix, first, last, dist[first]);
 
-    unset($dist[$first][$last]);
-    if (count($dist[$first]) == 0) unset($dist[$first]);
+    delete dist[first][last];
   }
 
 }

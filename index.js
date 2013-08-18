@@ -8,10 +8,11 @@ var optimist = require('optimist')
     .alias('c', 'config')
     .describe('c', 'Config YML file'),
   argv = optimist.argv,
+  util = require('util'),
   AffixParser = require('./src/hunspell/affix').AffixParser,
   DictParser = require('./src/hunspell/dict').DictParser,
-  util = require('util'),
-  FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer;
+  FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer,
+  Generator = require('./src/generator').Generator;
 
 if (argv.help) {
   optimist.showHelp();
@@ -34,8 +35,16 @@ affixParser.parse(function(err){
       process.stdout.write(word + '\n');
     });
     var anal = new FreqAnal();
-    console.log(
+    anal.analyze(dictParser.words, 6);
+/*    console.log(
       util.inspect(
         anal.analyze(dictParser.words, 3), { showHidden: true, depth: null }));
+*/
+    var generator = new Generator(anal.tupelList, dictParser.words);
+    while (true)
+    console.log(generator.getWord(8));
+
+
+
   });
 });
