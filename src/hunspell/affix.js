@@ -35,27 +35,40 @@ function readAffixFile(cb) {
     if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
-    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+(\S+)/)) {
-      var id = _suff[2];
+    var _suff; // never thought I'd ever name a variable "suff"
+
+    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+(\S+)$/)) {
+      var type  = _suff[1],
+          id    = _suff[2],
+          cross = _suff[3];
       self.affixes[id] = {
-        type:    _suff[1],
-        cross:   _suff[3] == 'Y',
+        type:    type,
+        cross:   cross == 'Y',
         entries: []
       };
-      affixCnt = _suff[4];
       return;
     }
-    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/)) {
-      var id = _suff[2];
-      if (typeof self.affixes[id] == 'undefined') return cb("Unexpected affix id " + _suff[2]);
-      var affix = self.affixes[id];
-      if (affix.type != _suff[1]) return cb("Unexpected affix type " + _suff[1]);
 
-      affix.entries.push({
-        strip:     _suff[3] == '0' ? 0  : _suff[3].length,
-        append:    _suff[4] == '0' ? '' : _suff[4],
-        condition: new RegExp(affix.type == 'P' ? '^' + _suff[5] : _suff[5] + '$')
-      });
+    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+([^\s\/]+)(?:\/(\S+))?\s+(\S+)(?:\s+(\S+))?/)) {
+      var type   = _suff[1],
+          id     = _suff[2],
+          strip  = _suff[3],
+          append = _suff[4],
+          cont   = _suff[5] || [],
+          match  = _suff[6],
+          morph  = _suff[7];
+      if (typeof self.affixes[id] == 'undefined') return cb("Unexpected affix id " + id);
+      var affix = self.affixes[id];
+      if (affix.type != type) return cb("Unexpected affix type " + type);
+
+      var entry = {
+        strip:     strip  == '0' ? 0  : strip.length,
+        append:    append == '0' ? '' : append,
+        continuation: cont,
+        condition: new RegExp(affix.type == 'P' ? '^' + match : match + '$')
+      };
+
+      affix.entries.push(entry);
     }
   })).on('end', function() {
     var error;
