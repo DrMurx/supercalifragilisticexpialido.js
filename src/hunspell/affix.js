@@ -35,7 +35,7 @@ function readAffixFile(cb) {
     if (!line.match(/^\s*$|^#/)) this.emit('data', line);
   }))
   .pipe(through(function(line) {
-    if (_suff = line.match(/^([SP])FX\s+([\w\d]+)\s+(\w)\s+(\d+)/)) {
+    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+(\S+)/)) {
       var id = _suff[2];
       self.affixes[id] = {
         type:    _suff[1],
@@ -45,7 +45,7 @@ function readAffixFile(cb) {
       affixCnt = _suff[4];
       return;
     }
-    if (_suff = line.match(/^([SP])FX\s+([\w\d]+)\s+(\pL+|0)\s+(\pL+)\s+([\]\[\pL\.^]+)/)) {
+    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/)) {
       var id = _suff[2];
       if (typeof self.affixes[id] == 'undefined') return cb("Unexpected affix id " + _suff[2]);
       var affix = self.affixes[id];
@@ -53,7 +53,7 @@ function readAffixFile(cb) {
 
       affix.entries.push({
         strip: _suff[3] == '0' ? 0 : _suff[3].length,
-        append: _suff[4],
+        append: _suff[4] == '0' ? '' : _suff[4],
         condition: new RegExp(affix.type == 'P' ? '^' + _suff[5] : _suff[5] + '$')
       });
     }
