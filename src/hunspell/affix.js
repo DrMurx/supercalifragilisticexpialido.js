@@ -52,8 +52,8 @@ function readAffixFile(cb) {
       if (affix.type != _suff[1]) return cb("Unexpected affix type " + _suff[1]);
 
       affix.entries.push({
-        strip: _suff[3] == '0' ? 0 : _suff[3].length,
-        append: _suff[4] == '0' ? '' : _suff[4],
+        strip:     _suff[3] == '0' ? 0  : _suff[3].length,
+        append:    _suff[4] == '0' ? '' : _suff[4],
         condition: new RegExp(affix.type == 'P' ? '^' + _suff[5] : _suff[5] + '$')
       });
     }

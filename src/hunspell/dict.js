@@ -39,8 +39,8 @@ DictParser.prototype.parse = function(cb) {
 
 DictParser.prototype.illegalWords = {
   'acronym': XRegExp("\\p{Lu}{2,}"),
-  'abbrev': XRegExp("[-.]$|^-"),
-  'freaky': XRegExp("[^\\p{L}\\p{Arabic}'-]")
+  'abbrev':  XRegExp("[-.]$|^-"),
+  'freaky':  XRegExp("[^\\p{L}\\p{Arabic}'-]")
 };
 
 DictParser.prototype.filterWord = function(word) {
