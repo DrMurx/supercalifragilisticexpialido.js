@@ -36,15 +36,11 @@ affixParser.parse(function(err){
     });
     var anal = new FreqAnal();
     anal.analyze(dictParser.words, 6);
-/*    console.log(
-      util.inspect(
-        anal.analyze(dictParser.words, 3), { showHidden: true, depth: null }));
-*/
+    // console.log(
+    //   util.inspect(
+    //     anal.analyze(dictParser.words, 3), { showHidden: true, depth: null }));
+
     var generator = new Generator(anal.tupelList, dictParser.words);
-    while (true)
-    console.log(generator.getWord(8));
-
-
-
+    while (true) console.log(generator.getWord(8));
   });
 });
