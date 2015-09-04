@@ -10,13 +10,13 @@ var
  * @class DictParser
  */
 module.exports.DictParser = DictParser = function(options) {
-  this.options = options;
+  this.options  = options;
   this.encoding = options.encoding;
-  this.words = [];
+  this.words    = [];
 };
 
 DictParser.prototype.parse = function(cb) {
-  var self = this,
+  var self      = this,
       lineCount = 0;
 
   fs.createReadStream(self.options.path)
@@ -50,6 +50,35 @@ DictParser.prototype.filterWord = function(word) {
     return matches ? true : result;
   }, false);
 };
+
+
+DictParser.prototype.getWordStats = function() {
+  var cnt = 0,
+      sum = 0,
+      min = 9999,
+      max = 0,
+      avg = 0,
+      dev = 0;
+
+  this.words.forEach(function (word) {
+    var len = word.length;
+    if (len < 3) return;
+    cnt++;
+    sum += len;
+    min = Math.min(min, len);
+    max = Math.max(max, len);
+    avg = Math.round(sum / cnt); // rolling avg
+    dev += Math.pow(len - avg, 2); // rolling deviation
+  });
+
+  return {
+    'min': min,
+    'max': max,
+    'avg': avg,
+    'dev': Math.ceil(Math.sqrt(dev / cnt))
+  };
+}
+
 
 function addWord(word) {
   if (!this.filterWord(word)) this.words.push(word);

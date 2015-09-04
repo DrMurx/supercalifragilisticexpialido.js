@@ -9,10 +9,12 @@ var optimist = require('optimist')
     .describe('c', 'Config YML file'),
   argv = optimist.argv,
   util = require('util'),
+  _ = require('underscore'),
   AffixParser = require('./src/hunspell/affix').AffixParser,
   DictParser = require('./src/hunspell/dict').DictParser,
   FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer,
-  Generator = require('./src/generator').Generator;
+  Generator = require('./src/generator').Generator,
+  Say = require('./src/speak/say');
 
 if (argv.help) {
   optimist.showHelp();
@@ -24,6 +26,7 @@ affixParser = new AffixParser({path: 'dicts/' + argv.lang + '.aff'});
 affixParser.parse(function(err){
   if (err) return console.error(err);
 
+  console.log("Loading hunspell dictionary");
   var dictParser = new DictParser({
     path: 'dicts/' + argv.lang + '.dic',
     encoding: affixParser.encoding,
@@ -34,13 +37,20 @@ affixParser.parse(function(err){
     if (argv.printwords) dictParser.words.forEach(function (word) {
       process.stdout.write(word + '\n');
     });
+
+    var stats = dictParser.getWordStats();
+
     var anal = new FreqAnal();
-    anal.analyze(dictParser.words, 6);
-    // console.log(
-    //   util.inspect(
-    //     anal.analyze(dictParser.words, 3), { showHidden: true, depth: null }));
+    _([3, 4, 5, 6]).each(function(size) {
+      console.log("Building tupel list (size " + size + ")...");
+      anal.analyze(dictParser.words, size);
+    })
 
     var generator = new Generator(anal.tupelList, dictParser.words);
-    while (true) console.log(generator.getWord(8));
+    while (true) {
+      var word = generator.getWord(stats.avg - stats.dev + Math.floor(Math.random() * (2 * stats.dev + 1)));
+      console.log(word);
+      Say(word, argv.lang);
+    }
   });
 });

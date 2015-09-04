@@ -49,14 +49,17 @@ function readAffixFile(cb) {
       return;
     }
 
-    if (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+([^\s\/]+)(?:\/(\S+))?\s+(\S+)(?:\s+(\S+))?/)) {
+    if ((_suff = line.match(/^([SP])FX\s(\S+)\s(\S+)\s([^\s\/]+)(?:\/(\S+))?\s(\S*)(?:\s(.+))?/)) 
+        ||
+        (_suff = line.match(/^([SP])FX\s+(\S+)\s+(\S+)\s+([^\s\/]+)(?:\/(\S+))?\s+(\S+)(?:\s+(.+))?/))
+      ) {
       var type   = _suff[1],
           id     = _suff[2],
           strip  = _suff[3],
           append = _suff[4],
           cont   = _suff[5] || [],
           match  = _suff[6],
-          morph  = _suff[7];
+          morph  = _suff[7] || null;
       if (typeof self.affixes[id] == 'undefined') return cb("Unexpected affix id " + id);
       var affix = self.affixes[id];
       if (affix.type != type) return cb("Unexpected affix type " + type);
@@ -78,8 +81,9 @@ function readAffixFile(cb) {
 }
 
 function ensureEncoding(cb) {
-  var self = this,
-  stream = fs.createReadStream(this.options.path);
+  var self   = this,
+      stream = fs.createReadStream(this.options.path);
+
   stream.pipe(split())
   .pipe(through(function(line) {
     if (!line.match(/^\s*$|^#/)) this.emit('data', line);
