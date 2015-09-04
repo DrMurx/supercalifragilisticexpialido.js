@@ -12,7 +12,7 @@ var optimist = require('optimist')
   _    = require('underscore'),
   XRegExp   = require('xregexp').XRegExp,
   Hunspell  = require('node-hunspell').Reader,
-  FreqAnal  = require('./lib/frequencyanalyzer').FrequencyAnalyzer,
+  Analyzer  = require('./lib/frequencyanalyzer').FrequencyAnalyzer,
   Generator = require('./lib/generator').Generator,
   Say       = require('./lib/speak/say');
 
@@ -23,7 +23,7 @@ if (argv.help) {
 
 
 var hunspell = new Hunspell('dicts/' + argv.lang + '.dic');
-var anal = new FreqAnal();
+var anal     = new Analyzer();
 
 
 var words = [];
@@ -39,7 +39,7 @@ hunspell.on('data', function(word) {
   word = word.word;
 
   anal.analyze([word], [3, 4, 5, 6]);
-  words.push(word);
+  words.push(word.toLowerCase());
 
   var len = word.length;
   if (len < 3) return;
@@ -68,7 +68,7 @@ hunspell.load(function() {
 
   var generator = new Generator(anal.tupelList, words);
   while (true) {
-    var word = generator.getWord(stats.avg - stats.dev + Math.floor(Math.random() * (2 * stats.dev + 1)));
+    var word = generator.getWord(stats.avg - stats.dev + Math.floor(Math.random() * (2 * stats.dev + 1)), [3, 4, 5, 6]);
     console.log(word);
     Say(word, argv.lang);
   }
