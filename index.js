@@ -9,48 +9,67 @@ var optimist = require('optimist')
     .describe('c', 'Config YML file'),
   argv = optimist.argv,
   util = require('util'),
-  _ = require('underscore'),
-  AffixParser = require('./src/hunspell/affix').AffixParser,
-  DictParser = require('./src/hunspell/dict').DictParser,
-  FreqAnal = require('./src/frequencyanalyzer').FrequencyAnalyzer,
-  Generator = require('./src/generator').Generator,
-  Say = require('./src/speak/say');
+  _    = require('underscore'),
+  XRegExp   = require('xregexp').XRegExp,
+  Hunspell  = require('node-hunspell').Reader,
+  FreqAnal  = require('./lib/frequencyanalyzer').FrequencyAnalyzer,
+  Generator = require('./lib/generator').Generator,
+  Say       = require('./lib/speak/say');
 
 if (argv.help) {
   optimist.showHelp();
   process.exit(0);
 }
 
-affixParser = new AffixParser({path: 'dicts/' + argv.lang + '.aff'});
 
-affixParser.parse(function(err){
-  if (err) return console.error(err);
+var hunspell = new Hunspell('dicts/' + argv.lang + '.dic');
+var anal = new FreqAnal();
 
-  console.log("Loading hunspell dictionary");
-  var dictParser = new DictParser({
-    path: 'dicts/' + argv.lang + '.dic',
-    encoding: affixParser.encoding,
-    affixes: affixParser.affixes
+
+var words = [];
+
+var cnt = 0,
+    sum = 0,
+    min = 9999,
+    max = 0,
+    avg = 0,
+    dev = 0;
+
+hunspell.on('data', function(word) {
+  word = word.word;
+
+  anal.analyze([word], [3, 4, 5, 6]);
+  words.push(word);
+
+  var len = word.length;
+  if (len < 3) return;
+  cnt++;
+  sum += len;
+  min =  Math.min(min, len);
+  max =  Math.max(max, len);
+  avg =  Math.round(sum / cnt); // rolling avg
+  dev += Math.pow(len - avg, 2); // rolling deviation
+});
+
+
+
+
+hunspell.load(function() {
+  if (argv.printwords) dictParser.words.forEach(function (word) {
+    process.stdout.write(word + '\n');
   });
 
-  dictParser.parse(function() {
-    if (argv.printwords) dictParser.words.forEach(function (word) {
-      process.stdout.write(word + '\n');
-    });
+  var stats =  {
+    'min': min,
+    'max': max,
+    'avg': avg,
+    'dev': Math.ceil(Math.sqrt(dev / cnt))
+  };
 
-    var stats = dictParser.getWordStats();
-
-    var anal = new FreqAnal();
-    _([3, 4, 5, 6]).each(function(size) {
-      console.log("Building tupel list (size " + size + ")...");
-      anal.analyze(dictParser.words, size);
-    })
-
-    var generator = new Generator(anal.tupelList, dictParser.words);
-    while (true) {
-      var word = generator.getWord(stats.avg - stats.dev + Math.floor(Math.random() * (2 * stats.dev + 1)));
-      console.log(word);
-      Say(word, argv.lang);
-    }
-  });
+  var generator = new Generator(anal.tupelList, words);
+  while (true) {
+    var word = generator.getWord(stats.avg - stats.dev + Math.floor(Math.random() * (2 * stats.dev + 1)));
+    console.log(word);
+    Say(word, argv.lang);
+  }
 });

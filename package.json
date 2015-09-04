@@ -22,6 +22,7 @@
     "through": "~2.3.4",
     "underscore": "~1.5.1",
     "xregexp": "~2.0.0",
-    "execSync": "~1.0.1-pre"
+    "execSync": "~1.0.1-pre",
+    "hunspell": "DrMurx/node-hunspell.git"
   }
 }
