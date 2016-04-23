@@ -16,13 +16,12 @@
   },
   "license": "AGPLv3",
   "dependencies": {
-    "iconv": "~2.0.6",
-    "optimist": "~0.6.0",
-    "split": "~0.2.10",
-    "through": "~2.3.4",
-    "underscore": "~1.5.1",
-    "xregexp": "~2.0.0",
-    "execSync": "~1.0.1-pre",
-    "hunspell": "DrMurx/node-hunspell.git"
+    "iconv": "^2.1.11",
+    "node-hunspell": "DrMurx/node-hunspell",
+    "optimist": "^0.6.1",
+    "split": "^1.0.0",
+    "through": "^2.3.8",
+    "underscore": "^1.8.3",
+    "xregexp": "^3.1.0"
   }
 }
