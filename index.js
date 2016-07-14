@@ -67,9 +67,12 @@ hunspell.load(function() {
   };
 
   var generator = new Generator(anal.tupelList, words);
-  while (true) {
+
+  var generateAndSay = function () {
     var word = generator.getWord(stats.avg - stats.dev + Math.floor(Math.random() * (2 * stats.dev + 1)), [3, 4, 5, 6]);
     console.log(word);
-    Say(word, argv.lang);
+    Say(word, argv.lang, generateAndSay);
   }
+
+  generateAndSay();
 });
